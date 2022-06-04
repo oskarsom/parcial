@@ -1,0 +1,243 @@
+from inspect import EndOfBlock
+from sqlite3 import Cursor
+from struct import pack, pack_into
+from tkinter import*
+import tkinter as tk
+from tkinter import ttk 
+from tkinter import messagebox
+
+import mysql.connector
+from mysqlx import Result, Row
+
+
+datos_de_estudiante=mysql.connector.connect(host="localhost",user="root",
+password="123456",database="datos_de_estudiante")
+cursor=datos_de_estudiante.cursor()
+def Vista(rows):
+    trv.delete(*trv.get_children())
+    for i in rows:
+        trv.insert("", "end", values=i)
+
+
+def Consulta():
+    q2=q.get()
+    query="select* from datos_de_estudiante where Identificacion Like '%"+q2+"%'or Nombre like' %"+q2+"%'"
+    cursor.execute(query)
+    rows=cursor.fetchall()
+    Vista(rows)
+
+def Restablecer():
+    query="select* from datos_de_estudiante "
+    cursor.execute(query)
+    rows=cursor.fetchall()
+    Vista(rows)
+
+def Agregar():
+    if t1.get()=="" or t2.get()=="":
+        messagebox.showerror("por favor", " ingrese la informacion correcta")
+    else:
+        datos_de_estudiante=mysql.connector.connect(host="localhost",user="root",
+        password="123456",database="datos_de_estudiante")
+        cursor=datos_de_estudiante.cursor()
+        cursor.execute("insert into datos_de_estudiante values(%s,%s,%s,%s,%s,%s)", (
+
+        t1.get(),
+        t2.get(),
+        t3.get(),
+        t4.get(),
+        t5.get(),
+        t6.get(),
+        ))
+
+        datos_de_estudiante.commit()
+        datos_de_estudiante.close()
+        messagebox.showinfo("Datos completados","se agregaron correctamente")
+        Mostrar()
+
+
+def Actualizar():
+    t0=t1.get()
+    datos_de_estudiante=mysql.connector.connect(host="localhost",user="root",
+    password="123456",database="datos_de_estudiante")
+    cursor=datos_de_estudiante.cursor()
+    cursor.execute("update datos_de_estudiante set Identificacion=%s,Nombre=%s,Fecha_De_Nacimiento=%s,carrera=%s,Eps=%s,Genero=%s where Identificacion='"+t0+"'"(
+    t1.get(),
+    t2.get(),
+    t3.get(),
+    t4.get(),
+    t5.get(),
+    t6.get(),
+    ))
+
+    datos_de_estudiante.commit()
+    Mostrar()
+    datos_de_estudiante.close()
+
+def Mostrar():
+    datos_de_estudiante=mysql.connector.connect(host="localhost",user="root",
+    password="123456",database="datos_de_estudiante")
+    cursor=datos_de_estudiante.cursor()
+    cursor.execute ("select* from datos_de_estudiante") 
+    result=cursor.fetchall()
+    if len(result) !=0:
+        trv.delete(*trv.get_children())
+        for rows in result:
+            trv.insert("",END,values=rows)
+    datos_de_estudiante.commit()
+    datos_de_estudiante.close()
+
+def trineeInfo(ev):
+    viewInfo=trv.focus()
+    learnerData=trv.item(viewInfo)
+    rows=learnerData[ "values"]
+    t1.set(rows[0])
+    t2.set(rows[0])
+    t3.set(rows[0])
+    t4.set(rows[0])
+    t5.set(rows[0])
+    t6.set(rows[0])
+
+def Limpiar():
+    ent1.delete(0,END)
+    ent1.delete(0,END)
+    ent1.delete(0,END)
+    ent1.delete(0,END)
+    ent1.delete(0,END)
+    ent1.delete(0,END)
+
+
+    
+
+
+
+root=Tk()
+
+q=StringVar()
+t1=StringVar()
+t2=StringVar()
+t3=StringVar()
+t4=StringVar()
+t5=StringVar()
+t6=StringVar()
+
+root.title("datos_de_estudiante")
+root.geometry("1300x600")
+root.config(bg="violet")
+
+
+root.config(cursor="pirate")
+root.config(relief="sunken")
+root.config(width="650",height="350")
+
+
+frame1=LabelFrame(root,text="datos del estudiante ", font=("calibri",14))
+frame2=LabelFrame(root,text="consulta ", font=("calibri",14))
+frame3=LabelFrame(root,text="datos del estudiante ", font=("calibri",14))
+
+frame1.pack(fill="both",expand="yes",padx=20,pady=15)
+frame2.pack(fill="both",expand="yes",padx=20,pady=15)
+frame3.pack(fill="both",expand="yes",padx=20,pady=15)
+
+trv=ttk.Treeview(frame3,columns=(1,2,3,4,5,6),show="headings",height="14")
+trv.pack()
+
+
+trv.heading(1,text="cedula ")
+trv.heading(2,text="nombres y apellidos")
+trv.heading(3,text="fecha de nacimiento")
+trv.heading(4,text="genero")
+trv.heading(5,text="carrera")
+trv.heading(6,text="eps")
+
+query="SELECT* from datos_de_estudiante"
+cursor.execute(query)
+rows=cursor.fetchall()
+Vista(rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+lbl1=Label(frame1,width=10,text="documento")
+lbl1.grid(column=0,row=0,padx=5,pady=3)
+ent1=Entry(frame1,textvariable=t1)
+ent1.grid(column=1,row=0,padx=5,pady=3)
+
+lbl2=Label(frame1,width=10,text="nombre")
+lbl2.grid(column=0,row=1,padx=5,pady=3)
+ent2=Entry(frame1,textvariable=t2)
+ent2.grid(column=1,row=1,padx=5,pady=3)
+
+lbl3=Label(frame1,width=10,text="fecha de nacimiento")
+lbl3.grid(column=0,row=2,padx=5,pady=3)
+ent3=Entry(frame1,textvariable=t3)
+ent3.grid(column=1,row=2,padx=5,pady=3)
+
+lbl4=Label(frame1,width=10,text="genero")
+lbl4.grid(column=0,row=3,padx=5,pady=3)
+ent4=Entry(frame1,textvariable=t4)
+ent4.grid(column=1,row=3,padx=5,pady=3)
+
+lbl5=Label(frame1,width=10,text="carrera")
+lbl5.grid(column=0,row=4,padx=5,pady=3)
+ent5=Entry(frame1,textvariable=t5)
+ent5.grid(column=1,row=4,padx=5,pady=3)
+
+lbl6=Label(frame1,width=10,text="eps")
+lbl6.grid(column=0,row=5,padx=5,pady=3)
+ent6=Entry(frame1,textvariable=t6)
+ent6.grid(column=1,row=5,padx=5,pady=3)
+
+
+
+
+
+
+
+
+agregar_btn=Button(frame1,width=10,text="Agregar", command=Agregar,background="green",foreground="white")
+agregar_btn.grid(column=0,row=6,padx=5,pady=3)
+
+actualizar_btn=Button(frame1,width=10,text="Actualizar",background="#0051C8",foreground="white")
+actualizar_btn.grid(column=1,row=6,padx=5,pady=3)
+
+eliminar_btn=Button(frame1,width=10,text="Eliminar",background="red",foreground="white")
+eliminar_btn.grid(column=2,row=6,padx=5,pady=3)
+
+limpiar_btn=Button(frame1,width=10,text="limpiar",background="#0051C8",foreground="white",command=Limpiar())
+limpiar_btn.grid(column=3,row=6,padx=5,pady=3)
+
+vista_btn=Button(frame1,width=10,text="Mostrar",background="#0051C8",foreground="white", command=Mostrar)
+vista_btn.grid(column=4,row=6,padx=5,pady=3)
+
+
+
+
+
+
+
+
+
+lbl=Label(frame2,width=10,text="consulta")
+lbl.pack(side=tk.LEFT,padx=10)
+ent=Entry(frame2,textvariable=q)
+ent.pack(side=tk.LEFT,padx=6)
+bnt=Button(frame2,width=10,text="consulta ",background="#0051C8",foreground="white",command=Consulta)
+bnt.pack(side=tk.LEFT,padx=6)
+
+cbnt=Button(frame2,width=10,text="restablecer ",background="#0051C8",foreground="grey",command=Restablecer)
+cbnt.pack(side=tk.LEFT,padx=6)
+
+
+
+
+
+root.mainloop()
